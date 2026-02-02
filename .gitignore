@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+
+# Docker
+*.log
+docker_mongo_data/
+**/mongo_data/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+token.txt
