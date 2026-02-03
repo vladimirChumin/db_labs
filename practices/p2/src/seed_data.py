@@ -1,7 +1,6 @@
-
 from pymongo import MongoClient
 from bson import ObjectId
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 import random
 
@@ -14,11 +13,11 @@ db.friendships.delete_many({})
 db.messages.delete_many({})
 
 users = [
-    {"name": "Аня",   "login": "anya",   "createdAt": datetime.utcnow()},
-    {"name": "Борис", "login": "boris",  "createdAt": datetime.utcnow()},
-    {"name": "Вера",  "login": "vera",   "createdAt": datetime.utcnow()},
-    {"name": "Глеб",  "login": "gleb",   "createdAt": datetime.utcnow()},
-    {"name": "Даша",  "login": "dasha",  "createdAt": datetime.utcnow()},
+    {"name": "Аня",   "login": "anya", "email": "anya@mail.com",   "createdAt": datetime.now(timezone.utc)},
+    {"name": "Борис", "login": "boris", "email": "boris@mail.com", "createdAt": datetime.now(timezone.utc)},
+    {"name": "Вера",  "login": "vera", "email": "vera@mail.com",  "createdAt": datetime.now(timezone.utc)},
+    {"name": "Глеб",  "login": "gleb", "email": "gleb@mail.com",  "createdAt": datetime.now(timezone.utc)},
+    {"name": "Даша",  "login": "dasha", "email": "dasha@mail.com", "createdAt": datetime.now(timezone.utc)},
 ]
 
 result = db.users.insert_many(users)
@@ -29,7 +28,7 @@ for i in range(len(user_ids)):
     friendships.append({
         "firstUserId": user_ids[i],
         "secondUserId": user_ids[(i + 1) % len(user_ids)],
-        "createdAt": datetime.utcnow()
+        "createdAt": datetime.now(timezone.utc)
     })
 
 db.friendships.insert_many(friendships)
@@ -54,7 +53,7 @@ for _ in range(10):
         "fromUserId": from_user,
         "toUserId": to_user,
         "text": random.choice(texts),
-        "createdAt": datetime.utcnow()
+        "createdAt": datetime.now(timezone.utc)
     })
 
 db.messages.insert_many(messages)

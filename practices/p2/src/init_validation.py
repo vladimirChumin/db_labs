@@ -1,8 +1,6 @@
 from pymongo import MongoClient, ASCENDING
 from pymongo.errors import OperationFailure
 import os
-from datetime import datetime, timezone
-datetime.now(timezone.utc)
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://admin:q@mongo:27017/?authSource=admin")
 client = MongoClient(MONGO_URI)
@@ -37,10 +35,11 @@ db.command({
     "validator": {
         "$jsonSchema": {
             "bsonType": "object",
-            "required": ["name", "login", "createdAt"],
+            "required": ["name", "login", "email", "createdAt"],
             "properties": {
                 "name":      {"bsonType": "string", "minLength": 1},
                 "login":     {"bsonType": "string", "minLength": 1},
+                "email":     {"bsonType": "string", "minLength": 1},
                 "createdAt": {"bsonType": "date"}
             }
         }
@@ -48,8 +47,6 @@ db.command({
     "validationLevel": "strict",
     "validationAction": "error"
 })
-
-db.users.create_index([("login", ASCENDING)], unique=True)
 
 ensure_collection("friendships")
 db.command({
@@ -83,5 +80,16 @@ db.friendships.create_index(
     unique=True
 )
 
+db.users.create_index(
+    [("email", ASCENDING)],
+    unique=True,
+    sparse=True
+)
+
+db.users.create_index(
+    [("login", ASCENDING)],
+    unique=True,
+    sparse=True
+)
 print("Validators and indexes applied successfully.")
 

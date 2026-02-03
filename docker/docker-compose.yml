@@ -25,7 +25,6 @@ services:
       - mongo
     tty: true
     stdin_open: true
-    command: ["sleep", "infinity"]
 volumes:
   mongo_data:
 
