@@ -17,3 +17,6 @@ docker_mongo_data/
 # OS
 .DS_Store
 token.txt
+
+# data
+/practices/p*/data/
