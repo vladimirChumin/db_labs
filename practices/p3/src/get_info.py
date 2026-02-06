@@ -70,7 +70,10 @@ def get_friends(user_value: str):
 def count_friends(user_value: str):
     user_id = find_user_id(db, value=user_value)
     count = db.friendships.count_documents({
-        "firstUserId": user_id
+        "$or": [
+            {"firstUserId": user_id},
+            {"secondUserId": user_id}
+        ]
     })
     return count
     
