@@ -76,9 +76,6 @@ def count_friends(user_value: str):
         ]
     })
     return count
-    
-    
-
 
 def main():
     parser = argparse.ArgumentParser()
@@ -104,8 +101,6 @@ def main():
             dt_to = parse_dt( input("Enter end time in datetime format\n"))
 
         print(get_messeges(args.user, dt_from, dt_to))
-        
-
 
 if __name__ == "__main__":
     main()

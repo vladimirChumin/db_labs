@@ -16,7 +16,10 @@ docker_mongo_data/
 
 # OS
 .DS_Store
-token.txt
+
+#API
+.token.txt
+wather_key.txt
 
 # data
 /practices/p*/data/
