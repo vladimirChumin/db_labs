@@ -2,6 +2,7 @@ import os
 from datetime import datetime, timezone
 import time
 import functools
+from datetime import datetime, timezone
 
 from pymongo import MongoClient
 from bson import ObjectId
@@ -9,7 +10,14 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://admin:q@mongo:27017/?authSource=admin")
 client = MongoClient(MONGO_URI)
-db = client.speed_test
+db = client.messenger
+
+test_message =   {
+    "fromUserId": ObjectId('69883308680b633adf8ffa34'),
+    "toUserId": ObjectId('69883308680b633adf8ffa36'),
+    "text": 'Спасибо!',
+    "createdAt": datetime.now(timezone.utc)
+  }
 
 def timed(iteration=3):
     def decorator(func):
@@ -25,12 +33,11 @@ def timed(iteration=3):
 
 @timed(iteration=3)
 def insert_values_threads(iter_count: int, workers: int = 4):
-    col = db.test_collection
+    col = db.messages
     def one(i: int):
-        col.insert_one({
-            "text": "test value",
-            "count": i
-        })
+        msg = test_message.copy()
+        msg["createdAt"] = datetime.now(timezone.utc)
+        db.messages.insert_one(msg)
         
     with ThreadPoolExecutor(max_workers = workers) as ex:
         futures = [ex.submit(one, i) for i in range(iter_count)] 
@@ -40,7 +47,7 @@ def insert_values_threads(iter_count: int, workers: int = 4):
 
 @timed(iteration=3)
 def read_values_threads(ids: list, workers: int = 4):
-    col = db.test_collection
+    col = db.messages
     def one(_id: ObjectId):
         col.find_one({"_id": _id}, projection={"_id": 1})
 
@@ -51,12 +58,11 @@ def read_values_threads(ids: list, workers: int = 4):
 
 @timed(iteration=3)
 def read_and_insert_values_threads(iter_count: int, workers: int = 4):
-    col = db.test_collection
+    col = db.messages
     def one(i):
-        res = col.insert_one({
-            "text": "test value",
-            "count": i
-        })
+        msg = test_message.copy()
+        msg["createdAt"] = datetime.now(timezone.utc)
+        res = col.insert_one(msg)
         col.find_one(
             {"_id": res.inserted_id},
             projection={"_id": 1}

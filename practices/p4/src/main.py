@@ -7,29 +7,29 @@ from pymongo import MongoClient
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://admin:q@mongo:27017/?authSource=admin")
 client = MongoClient(MONGO_URI)
-db = client.speed_test
+db = client.messenger
 
 
 def run_for_size(n: int, is_threads: bool = False) -> tuple[float, float, float]:
     if is_threads == False:
-        db.test_collection.delete_many({})
+        db.messages.delete_many({})
         ins = insert_values(n)
 
-        db.test_collection.delete_many({})
+        db.messages.delete_many({})
         ids = prepare_ids(n)
         read = read_values(ids)
 
-        db.test_collection.delete_many({})
+        db.messages.delete_many({})
         read_ins = read_and_insert_values(n)
     else:
-        db.test_collection.delete_many({})
+        db.messages.delete_many({})
         ins = insert_values_threads(n)
 
-        db.test_collection.delete_many({})
+        db.messages.delete_many({})
         ids = prepare_ids(n)
         read = read_values_threads(ids)
 
-        db.test_collection.delete_many({})
+        db.messages.delete_many({})
         read_ins = read_and_insert_values_threads(n)
 
     return ins, read, read_ins
