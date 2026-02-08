@@ -82,6 +82,8 @@ db.friendships.create_index(
     [("firstUserId", ASCENDING), ("secondUserId", ASCENDING)], unique=True
 )
 
+db.friendships.create_index([("secondUserId", ASCENDING)])
+
 db.users.create_index([("email", ASCENDING)], unique=True, sparse=True)
 
 db.users.create_index([("login", ASCENDING)], unique=True, sparse=True)
