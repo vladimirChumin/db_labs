@@ -1,6 +1,6 @@
 import pandas as pd
 import requests
-from pymongo import MongoClient, ASCENDING
+from pymongo import MongoClient
 import os
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://admin:q@mongo:27017/?authSource=admin")
@@ -98,7 +98,6 @@ def main():
         {"$set": doc},
          upsert=True
         )
-        break
 
 if __name__ == "__main__":
     main()
