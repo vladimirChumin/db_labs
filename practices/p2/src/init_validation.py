@@ -62,10 +62,11 @@ db.command(
                 {
                     "$jsonSchema": {
                         "bsonType": "object",
-                        "required": ["firstUserId", "secondUserId", "createdAt"],
+                        "required": ["firstUserId", "secondUserId", "pairKey", "createdAt"],
                         "properties": {
                             "firstUserId": {"bsonType": "objectId"},
                             "secondUserId": {"bsonType": "objectId"},
+                            "pairKey": {"bsonType": "string", "minLength": 1},
                             "createdAt": {"bsonType": "date"},
                         },
                     }
@@ -78,14 +79,15 @@ db.command(
     }
 )
 
-db.friendships.create_index(
-    [("firstUserId", ASCENDING), ("secondUserId", ASCENDING)], unique=True
-)
-
+db.friendships.create_index([("pairKey", ASCENDING)], unique=True)
+db.friendships.create_index([("firstUserId", ASCENDING)])
 db.friendships.create_index([("secondUserId", ASCENDING)])
 
-db.users.create_index([("email", ASCENDING)], unique=True, sparse=True)
 
+db.messages.create_index([("fromUserId", ASCENDING)])
+db.messages.create_index([("toUserId", ASCENDING)])
+
+db.users.create_index([("email", ASCENDING)], unique=True, sparse=True)
 db.users.create_index([("login", ASCENDING)], unique=True, sparse=True)
 
 print("Validators and indexes applied successfully.")

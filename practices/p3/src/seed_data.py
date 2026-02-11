@@ -40,15 +40,23 @@ def add_message(from_user: str, to_user: str, text: str):
     )
 
 
+def make_pair_key(a, b):
+    s1 = str(a)
+    s2 = str(b)
+    return "_".join(sorted([s1, s2]))
+
 def add_friendship(first_user: str, second_user: str):
     if first_user == second_user:
         raise ValueError("First and second user is same")
+
     frst_user_id = find_user_id(db, value=first_user)
     scnd_user_id = find_user_id(db, value=second_user)
+
     db.friendships.insert_one(
         {
             "firstUserId": frst_user_id,
             "secondUserId": scnd_user_id,
+            "pairKey": make_pair_key(frst_user_id, scnd_user_id),
             "createdAt": datetime.now(timezone.utc),
         }
     )
