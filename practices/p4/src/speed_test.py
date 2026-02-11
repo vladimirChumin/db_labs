@@ -17,21 +17,31 @@ test_message =   {
     "text": 'Спасибо!',
     "createdAt": datetime.now(timezone.utc)
   }
+ITER = 3
 
+def timed(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs) -> float:
+        start = time.perf_counter()
+        func(*args, **kwargs)
+        end = time.perf_counter()
+        return end - start
+    return wrapper
 
-def timed(iteration=3):
+def mean_of(n: int = 3):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            start = time.perf_counter()
-            for _ in range(iteration):
-                func(*args, **kwargs)
-            end = time.perf_counter()
-            return (end - start) / iteration
+            total = 0.0
+            for _ in range(n):
+                db.messages.delete_many({})
+                total += func(*args, **kwargs)
+            return total / n
         return wrapper
     return decorator
 
-@timed(iteration=3)
+@mean_of(ITER)
+@timed
 def insert_values(iter_count: int):
     for i in range(iter_count):
         msg = test_message.copy()
@@ -47,12 +57,14 @@ def prepare_ids(iter_count: int) -> list:
         ids.append(res.inserted_id)
     return ids
 
-@timed(iteration=3)
+@mean_of(ITER)
+@timed
 def read_values(ids: list):
     for _id in ids:
         db.messages.find_one({"_id": _id}, projection={"_id": 1})
 
-@timed(iteration=3)
+@mean_of(ITER)
+@timed
 def read_and_insert_values(iter_count: int):
     for i in range(iter_count):
         msg = test_message.copy()
@@ -62,3 +74,13 @@ def read_and_insert_values(iter_count: int):
             {"_id": res.inserted_id},
             projection={"_id": 1}
         )
+
+@mean_of(ITER)
+@timed
+def update_values(ids: list):
+    for _id in ids:
+        filter = {
+            "_id": _id
+        }
+        update_val = {"$set": {"text": "Update value"}}
+        db.messages.update_one(filter=filter, update=update_val)
