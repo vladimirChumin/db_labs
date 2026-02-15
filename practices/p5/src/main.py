@@ -43,6 +43,9 @@ cities = {
 }
 
 def parse_open_weather(data: dict, city_name: str) -> dict:
+    if df.empty:
+        return None
+
     df = pd.json_normalize(data["list"], sep="_")
     df["dt"] = pd.to_datetime(df["dt_txt"])
 
@@ -50,7 +53,8 @@ def parse_open_weather(data: dict, city_name: str) -> dict:
 
     df["weather_main"] = df["weather"].apply(lambda x: x[0]["main"] if x else None)
 
-    coldest = df.loc[df["main_temp"].idxmin()]
+    min_index = df["main_temp"].idxmin()
+    coldest_day = df.loc[min_index]
     days = []
     for _, r in df.iterrows():
         days.append({
@@ -59,6 +63,9 @@ def parse_open_weather(data: dict, city_name: str) -> dict:
             "feels_like": float(r["main_feels_like"]),
             "weather": r["weather_main"],
         })
+    
+    print(df)
+    print(df.columns)
 
     return {
         "city": {
@@ -80,10 +87,10 @@ def parse_open_weather(data: dict, city_name: str) -> dict:
             "rain_days": int( (df["weather_main"] == "Rain").sum()),
             "cloud_days": int((df["weather_main"] == "Clouds").sum()),
             "coldest_day": {
-                "dt": coldest["dt"].to_pydatetime(),
-                "temp": float(coldest["main_temp"]),
-                "feels_like": float(coldest["main_feels_like"]),
-                "weather": coldest["weather_main"],
+                "dt": coldest_day["dt"].to_pydatetime(),
+                "temp": float(coldest_day["main_temp"]),
+                "feels_like": float(coldest_day["main_feels_like"]),
+                "weather": coldest_day["weather_main"],
             }
         }
     }
