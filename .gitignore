@@ -23,6 +23,7 @@ wather_key.txt
 
 # data
 /practices/p*/data/
+/practices/p6/output/
 
 # LibreOffice lock files
 .~lock.*

@@ -21,10 +21,14 @@ services:
       - ..:/work:cached
     environment:
       MONGO_URI: mongodb://admin:q@mongo:27017/?authSource=admin
+      MONGO_DB_MARKET: market
+      MARKET_DATA_DIR: "practices/p6/data"
+      MARKET_OUTPUT_DATA: "practices/p6/output"
     depends_on:
       - mongo
     tty: true
     stdin_open: true
+
 volumes:
   mongo_data:
 
